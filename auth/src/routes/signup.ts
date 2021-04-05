@@ -1,5 +1,7 @@
 import express, { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
+import { RequestValidationException } from '../exceptions/requestValidationException';
+import { DatabaseConnectionException } from '../exceptions/databaseConnectionException';
 
 const router = express.Router();
 
@@ -13,10 +15,10 @@ router.post(
   (req: Request, res: Response) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      const err = new Error('Invalid email or password');
-      throw err;
-      // return res.status(400).json({ errors: errors.array() });
+      throw new RequestValidationException(errors.array());
     }
+
+    throw new DatabaseConnectionException();
     res.send({});
   }
 );
