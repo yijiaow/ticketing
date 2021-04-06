@@ -1,4 +1,5 @@
 import express from 'express';
+import { NotFoundException } from './exceptions/notFoundException';
 import { errorHandler } from './middleware/errorHandler';
 import { currentUserRouter } from './routes/current-user';
 import { signInRouter } from './routes/signin';
@@ -12,6 +13,10 @@ app.use(currentUserRouter);
 app.use(signInRouter);
 app.use(signOutRouter);
 app.use(signUpRouter);
+
+app.all('*', (req, res) => {
+  throw new NotFoundException();
+});
 
 app.use(errorHandler);
 
