@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
+import jwt from 'jsonwebtoken';
 import { RequestValidationException } from '../exceptions/requestValidationException';
 import { BadRequestException } from '../exceptions/BadRequestException';
 import { User } from '../models/user';
@@ -23,8 +24,17 @@ router.post(
     if (existingUser) {
       throw new BadRequestException('Email already in use');
     }
+
     const newUser = await User.build({ email, password });
     await newUser.save();
+
+    const token = jwt.sign(
+      { id: newUser.id, email: newUser.email },
+      'secretagentman'
+    );
+    req.session = {
+      token,
+    };
 
     res.status(201).send({ newUser });
   }
