@@ -30,7 +30,7 @@ router.post(
 
     const token = jwt.sign(
       { id: newUser.id, email: newUser.email },
-      'secretagentman'
+      process.env.JWT_KEY!
     );
     req.session = {
       token,

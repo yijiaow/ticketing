@@ -18,7 +18,19 @@ interface UserDoc extends mongoose.Document {
   password: string;
 }
 
-const userSchema = new Schema({ email: String, password: String });
+const userSchema = new Schema(
+  { email: String, password: String },
+  {
+    toJSON: {
+      transform(doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.password;
+        delete ret.__v;
+      },
+    },
+  }
+);
 
 // Define a pre hook for the model
 userSchema.pre('save', async function (next) {
