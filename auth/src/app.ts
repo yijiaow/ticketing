@@ -1,8 +1,7 @@
 import express from 'express';
 import 'express-async-errors';
 import cookieSession from 'cookie-session';
-import { NotFoundException } from './exceptions/notFoundException';
-import { errorHandler } from './middleware/errorHandler';
+import { errorHandler, NotFoundException } from '@yijiao_ticketingdev/common';
 import { currentUserRouter } from './routes/current-user';
 import { signInRouter } from './routes/signin';
 import { signOutRouter } from './routes/signout';
