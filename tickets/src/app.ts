@@ -1,7 +1,11 @@
 import express from 'express';
 import 'express-async-errors';
 import cookieSession from 'cookie-session';
-import { errorHandler, NotFoundException } from '@yijiao_ticketingdev/common';
+import {
+  currentUser,
+  errorHandler,
+  NotFoundException,
+} from '@yijiao_ticketingdev/common';
 import { createTicketRouter } from './routes/create';
 
 const app = express();
@@ -13,6 +17,8 @@ app.use(
     secure: process.env.NODE_ENV !== 'test',
   })
 );
+
+app.use(currentUser);
 
 app.use(createTicketRouter);
 
