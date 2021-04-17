@@ -9,6 +9,7 @@ import {
 import { createTicketRouter } from './routes/create';
 import { getTicketRouter } from './routes/ticket';
 import { listTicketRouter } from './routes/list';
+import { updateTicketRouter } from './routes/update';
 
 const app = express();
 app.set('trust proxy', true);
@@ -25,6 +26,7 @@ app.use(currentUser);
 app.use(createTicketRouter);
 app.use(getTicketRouter);
 app.use(listTicketRouter);
+app.use(updateTicketRouter);
 
 app.all('*', async (req, res) => {
   throw new NotFoundException();
