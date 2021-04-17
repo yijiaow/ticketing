@@ -38,9 +38,14 @@ afterAll(async () => {
 });
 
 global.generateCookie = () => {
-  const email = 'test@test.domain';
-  const password = 'password';
-  const token = jwt.sign({ email, password }, process.env.JWT_KEY!);
+  // Create JWT with payload { id, email }
+  const token = jwt.sign(
+    {
+      id: new mongoose.Types.ObjectId().toHexString(),
+      email: 'test@test.domain',
+    },
+    process.env.JWT_KEY!
+  );
 
   // Build session object
   const session = { token };

@@ -17,3 +17,31 @@ it('returns status code other than 401 if user is signed in', async () => {
     .send({});
   expect(resp.status).not.toEqual(401);
 });
+
+it('returns 400 with missing or invalid title', async () => {
+  await request(app)
+    .post('/api/tickets/create')
+    .set('Cookie', global.generateCookie())
+    .send({ price: 10.99 })
+    .expect(400);
+
+  await request(app)
+    .post('/api/tickets/create')
+    .set('Cookie', global.generateCookie())
+    .send({ title: '', price: 10.99 })
+    .expect(400);
+});
+
+it('returns 400 with missing or invalid price', async () => {
+  await request(app)
+    .post('/api/tickets/create')
+    .set('Cookie', global.generateCookie())
+    .send({ title: 'Music festival ticket' })
+    .expect(400);
+
+  await request(app)
+    .post('/api/tickets/create')
+    .set('Cookie', global.generateCookie())
+    .send({ title: 'Music festival ticket', price: -100 })
+    .expect(400);
+});
