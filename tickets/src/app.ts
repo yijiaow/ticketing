@@ -7,6 +7,7 @@ import {
   NotFoundException,
 } from '@yijiao_ticketingdev/common';
 import { createTicketRouter } from './routes/create';
+import { getTicketRouter } from './routes/ticket';
 
 const app = express();
 app.set('trust proxy', true);
@@ -21,6 +22,7 @@ app.use(
 app.use(currentUser);
 
 app.use(createTicketRouter);
+app.use(getTicketRouter);
 
 app.all('*', async (req, res) => {
   throw new NotFoundException();
