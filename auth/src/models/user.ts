@@ -19,7 +19,10 @@ interface UserDoc extends mongoose.Document {
 }
 
 const userSchema = new Schema(
-  { email: String, password: String },
+  {
+    email: { type: String, required: true },
+    password: { type: String, required: true },
+  },
   {
     toJSON: {
       transform(doc, ret) {
