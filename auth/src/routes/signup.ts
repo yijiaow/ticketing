@@ -35,7 +35,7 @@ router.post(
       token,
     };
 
-    res.status(201).send({ newUser });
+    res.status(201).send(newUser);
   }
 );
 
