@@ -1,4 +1,6 @@
 import nats from 'node-nats-streaming';
+import { randomBytes } from 'crypto';
+import { TicketCreatedPublisher } from './events/ticketCreatedPublisher';
 
 console.clear();
 
@@ -9,11 +11,10 @@ const stan = nats.connect('nats-test-cluster', 'cluster_id_pub', {
 stan.on('connect', () => {
   console.log('Publisher connected to NATS');
 
-  stan.publish(
-    'ticket:created',
-    JSON.stringify({ id: '1', title: 'Music Festival Ticket', price: 199 }),
-    () => {
-      console.log('Event published');
-    }
-  );
+  new TicketCreatedPublisher(stan).publish({
+    id: '1',
+    title: 'Music Festival Ticket',
+    price: 199,
+    userId: randomBytes(4).toString('hex'),
+  });
 });
