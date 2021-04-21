@@ -4,7 +4,7 @@ import { TicketCreatedPublisher } from './events/ticketCreatedPublisher';
 
 console.clear();
 
-const stan = nats.connect('nats-test-cluster', 'cluster_id_pub', {
+const stan = nats.connect('ticketing', 'cluster_id_pub', {
   url: 'http://localhost:4222',
 });
 
