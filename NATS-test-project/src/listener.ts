@@ -4,7 +4,7 @@ import { TicketCreatedListener } from './events/ticketCreatedListener';
 
 console.clear();
 
-const stan = nats.connect('nats-test-cluster', randomBytes(4).toString('hex'), {
+const stan = nats.connect('ticketing', randomBytes(4).toString('hex'), {
   url: 'http://localhost:4222',
 });
 
