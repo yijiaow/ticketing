@@ -1,5 +1,8 @@
 import mongoose, { Schema } from 'mongoose';
+import { OrderStatus } from '@yijiao_ticketingdev/common';
 import { TicketDoc } from './ticket';
+
+export { OrderStatus };
 
 interface OrderAttrs {
   userId: string;
