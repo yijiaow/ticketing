@@ -6,10 +6,8 @@ import {
   validateRequest,
   NotFoundException,
   BadRequestException,
-  OrderStatus,
 } from '@yijiao_ticketingdev/common';
 import { Ticket } from '../models/ticket';
-import { Order } from '../models/order';
 
 const router = express.Router();
 
@@ -31,24 +29,12 @@ router.post(
       throw new NotFoundException();
     }
 
-    // Make sure this ticket is not already reserved
-    // Run query to find an existing order with this ticket
-    // and the status is not canceled
-    const existingOrder = await Order.findOne({
-      ticket: ticket,
-      status: {
-        $in: [
-          OrderStatus.Created,
-          OrderStatus.AwaitingPayment,
-          OrderStatus.Complete,
-        ],
-      },
-    });
-    if (existingOrder) {
+    const isReserved = await ticket.isReserved();
+    if (isReserved) {
       throw new BadRequestException('This ticket is already reserved');
     }
 
-    res.send({ ticket });
+    res.send({});
   }
 );
 
