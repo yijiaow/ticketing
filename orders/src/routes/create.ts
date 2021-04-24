@@ -6,10 +6,14 @@ import {
   validateRequest,
   NotFoundException,
   BadRequestException,
+  OrderStatus,
 } from '@yijiao_ticketingdev/common';
 import { Ticket } from '../models/ticket';
+import { Order } from '../models/order';
 
 const router = express.Router();
+
+const EXPIRATION_WINDOW_SECONDS = 15 * 60;
 
 router.post(
   '/api/orders',
@@ -34,7 +38,19 @@ router.post(
       throw new BadRequestException('This ticket is already reserved');
     }
 
-    res.send({});
+    // Calculate an expiration date for this order
+    const expiresAt = new Date();
+    expiresAt.setSeconds(expiresAt.getSeconds() + EXPIRATION_WINDOW_SECONDS);
+
+    const order = Order.build({
+      userId: req.currentUser!.id,
+      status: OrderStatus.Created,
+      expiresAt,
+      ticket,
+    });
+    await order.save();
+
+    res.send(order);
   }
 );
 
