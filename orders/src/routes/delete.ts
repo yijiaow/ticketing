@@ -5,6 +5,8 @@ import {
   NotAuthorizedException,
 } from '@yijiao_ticketingdev/common';
 import { Order, OrderStatus } from '../models/order';
+import { natsWrapper } from '../natsWrapper';
+import { OrderCanceledPublisher } from '../events/publishers/orderCanceledPublisher';
 
 const router = express.Router();
 
@@ -22,6 +24,10 @@ router.put(
     order.set({ status: OrderStatus.Canceled });
     await order.save();
 
+    new OrderCanceledPublisher(natsWrapper.client).publish({
+      id: order.id,
+      ticket: { id: order.ticket.id },
+    });
     res.send(order);
   }
 );
