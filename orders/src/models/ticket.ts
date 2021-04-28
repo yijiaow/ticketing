@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 import { Order, OrderStatus } from './order';
 
 interface TicketAttrs {
@@ -17,7 +18,7 @@ interface TicketModel extends mongoose.Model<TicketDoc> {
   build(attrs: TicketAttrs): TicketDoc;
 }
 
-const ticketSchema = new Schema<TicketDoc>(
+const ticketSchema = new Schema(
   {
     title: {
       type: String,
@@ -26,6 +27,7 @@ const ticketSchema = new Schema<TicketDoc>(
     price: {
       type: Number,
       required: true,
+      min: 0,
     },
   },
   {
@@ -37,6 +39,8 @@ const ticketSchema = new Schema<TicketDoc>(
     },
   }
 );
+
+ticketSchema.plugin(updateIfCurrentPlugin);
 
 ticketSchema.statics.build = (attrs: TicketAttrs) => {
   return new Ticket({
@@ -51,6 +55,7 @@ ticketSchema.methods.isReserved = async function () {
   // Run query to find an existing order with this ticket
   // and the status is not canceled
   const existingOrder = await Order.findOne({
+    // @ts-ignore
     ticket: this,
     status: {
       $in: [
