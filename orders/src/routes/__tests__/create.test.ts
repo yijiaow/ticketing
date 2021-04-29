@@ -5,6 +5,16 @@ import { Ticket } from '../../models/ticket';
 import { Order, OrderStatus } from '../../models/order';
 import { natsWrapper } from '../../natsWrapper';
 
+const buildTicket = async () => {
+  const ticket = Ticket.build({
+    id: mongoose.Types.ObjectId().toHexString(),
+    title: 'Coachella',
+    price: 420,
+  });
+  await ticket.save();
+  return ticket;
+};
+
 it('returns 404 if ticket does not exist', async () => {
   await request(app)
     .post('/api/orders')
@@ -14,11 +24,7 @@ it('returns 404 if ticket does not exist', async () => {
 });
 
 it('returns an error if ticket is already reserved', async () => {
-  const ticket = Ticket.build({
-    title: 'Coachella',
-    price: 420,
-  });
-  await ticket.save();
+  const ticket = await buildTicket();
 
   const order = Order.build({
     userId: 'test_user',
@@ -36,11 +42,7 @@ it('returns an error if ticket is already reserved', async () => {
 });
 
 it('reserves a ticket', async () => {
-  const ticket = Ticket.build({
-    title: 'Coachella',
-    price: 420,
-  });
-  await ticket.save();
+  const ticket = await buildTicket();
 
   await request(app)
     .post('/api/orders')
@@ -50,11 +52,7 @@ it('reserves a ticket', async () => {
 });
 
 it('emits an order created event', async () => {
-  const ticket = Ticket.build({
-    title: 'Coachella',
-    price: 420,
-  });
-  await ticket.save();
+  const ticket = await buildTicket();
 
   await request(app)
     .post('/api/orders')
