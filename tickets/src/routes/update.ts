@@ -5,6 +5,7 @@ import {
   validateRequest,
   NotFoundException,
   NotAuthorizedException,
+  BadRequestException,
 } from '@yijiao_ticketingdev/common';
 import { Ticket } from '../models/ticket';
 import { TicketUpdatedPublisher } from '../events/publishers/ticketUpdatedPublisher';
@@ -29,6 +30,9 @@ router.put(
     }
     if (ticket.userId !== req.currentUser!.id) {
       throw new NotAuthorizedException();
+    }
+    if (ticket.orderId) {
+      throw new BadRequestException('Cannot edit a reserved ticket');
     }
 
     const { title, price } = req.body;
