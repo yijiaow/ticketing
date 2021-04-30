@@ -7,6 +7,7 @@ import {
 } from '@yijiao_ticketingdev/common';
 import { queueGroupName } from './queueGroupName';
 import { Ticket } from '../../models/ticket';
+import { TicketUpdatedPublisher } from '../publishers/ticketUpdatedPublisher';
 
 export class OrderCanceledListener extends BaseListener<OrderCanceledEvent> {
   readonly subject = Subjects.OrderCanceled;
@@ -19,6 +20,15 @@ export class OrderCanceledListener extends BaseListener<OrderCanceledEvent> {
     }
     ticket.set({ orderId: null });
     await ticket.save();
+
+    await new TicketUpdatedPublisher(this.client).publish({
+      id: ticket.id,
+      __v: ticket.__v,
+      title: ticket.title,
+      price: ticket.price,
+      userId: ticket.userId,
+      orderId: ticket.orderId,
+    });
 
     message.ack();
   };
