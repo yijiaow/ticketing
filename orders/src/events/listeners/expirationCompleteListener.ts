@@ -7,6 +7,8 @@ import {
 } from '@yijiao_ticketingdev/common';
 import { queueGroupName } from './queueGroupName';
 import { Order } from '../../models/order';
+import { natsWrapper } from '../../natsWrapper';
+import { OrderCanceledPublisher } from '../publishers/orderCanceledPublisher';
 
 export class ExpirationCompleteListener extends BaseListener<ExpirationCompleteEvent> {
   readonly subject = Subjects.ExpirationComplete;
@@ -24,6 +26,13 @@ export class ExpirationCompleteListener extends BaseListener<ExpirationCompleteE
       status: OrderStatus.Canceled,
     });
     await order.save();
+
+    await new OrderCanceledPublisher(natsWrapper.client).publish({
+      id: order.id,
+      ticket: {
+        id: order.ticket.id,
+      },
+    });
 
     message.ack();
   };
