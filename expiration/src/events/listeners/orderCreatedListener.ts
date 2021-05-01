@@ -12,7 +12,11 @@ export class OrderCreatedListener extends BaseListener<OrderCreatedEvent> {
   queueGroupName = queueGroupName;
 
   onMessage = async (data: OrderCreatedEvent['data'], message: Message) => {
-    await expirationQueue.add({ orderId: data.id });
+    const delay = new Date(data.expiresAt).getTime() - new Date().getTime();
+    console.log(`Waiting ${delay} milliseconds to process this job`);
+
+    await expirationQueue.add({ orderId: data.id }, { delay: delay });
+
     message.ack();
   };
 }
