@@ -7,6 +7,8 @@ import {
   NotFoundException,
 } from '@yijiao_ticketingdev/common';
 
+import { createPaymentRouter } from './routes/create';
+
 const app = express();
 app.set('trust proxy', true);
 app.use(express.json());
@@ -18,6 +20,8 @@ app.use(
 );
 
 app.use(currentUser);
+
+app.use(createPaymentRouter);
 
 app.all('*', async (req, res) => {
   throw new NotFoundException();
