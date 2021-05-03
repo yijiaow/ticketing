@@ -16,6 +16,7 @@ const setup = async () => {
 
   const data: OrderCreatedEvent['data'] = {
     id: mongoose.Types.ObjectId().toHexString(),
+    __v: 0,
     userId: mongoose.Types.ObjectId().toHexString(),
     status: OrderStatus.Created,
     expiresAt: new Date().toISOString(),

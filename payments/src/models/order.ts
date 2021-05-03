@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 import { OrderStatus } from '@yijiao_ticketingdev/common';
 
 export { OrderStatus };
@@ -18,6 +19,7 @@ interface OrderDoc extends mongoose.Document {
 
 interface OrderModel extends mongoose.Model<OrderDoc> {
   build(attrs: OrderAttrs): OrderDoc;
+  findByEvent(event: { id: string; __v: number }): Promise<OrderDoc | null>;
 }
 
 const orderSchema = new Schema(
@@ -41,6 +43,8 @@ const orderSchema = new Schema(
   }
 );
 
+orderSchema.plugin(updateIfCurrentPlugin);
+
 orderSchema.statics.build = (attrs: OrderAttrs) => {
   return new Order({
     _id: attrs.id,
@@ -48,6 +52,10 @@ orderSchema.statics.build = (attrs: OrderAttrs) => {
     status: attrs.status,
     price: attrs.price,
   });
+};
+
+orderSchema.statics.findByEvent = (event: { id: string; __v: number }) => {
+  return Order.findOne({ _id: event.id, __v: event.__v - 1 });
 };
 
 export const Order = mongoose.model<OrderDoc, OrderModel>('Order', orderSchema);
