@@ -2,6 +2,7 @@ import request from 'supertest';
 import mongoose from 'mongoose';
 import { app } from '../../app';
 import { Order, OrderStatus } from '../../models/order';
+import { stripe } from '../../stripe';
 
 it('returns 404 when the order does not exist', async () => {
   await request(app)
@@ -46,7 +47,7 @@ it('returns 400 when purchasing a canceled order', async () => {
     .expect(400);
 });
 
-it('returns 201 with valid inputs', async () => {
+it.only('returns 201 with valid inputs and creates a charge', async () => {
   const order = Order.build({
     id: mongoose.Types.ObjectId().toHexString(),
     userId: mongoose.Types.ObjectId().toHexString(),
@@ -60,4 +61,10 @@ it('returns 201 with valid inputs', async () => {
     .set('Cookie', global.generateCookie(order.userId))
     .send({ orderId: order.id, token: 'test_token' })
     .expect(201);
+
+  expect(stripe.charges.create).toHaveBeenCalled();
+  const chargeOpts = (stripe.charges.create as jest.Mock).mock.calls[0][0];
+  expect(chargeOpts.amount).toEqual(order.price * 100);
+  expect(chargeOpts.currency).toEqual('usd');
+  expect(chargeOpts.source).toEqual('test_token');
 });
