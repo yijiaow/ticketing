@@ -11,6 +11,7 @@ declare global {
 }
 
 jest.mock('../natsWrapper');
+jest.mock('../stripe');
 
 let mongo: any;
 
