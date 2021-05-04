@@ -10,6 +10,7 @@ import {
   OrderStatus,
 } from '@yijiao_ticketingdev/common';
 import { Order } from '../models/order';
+import { stripe } from '../stripe';
 
 const router = express.Router();
 
@@ -36,6 +37,13 @@ router.post(
     if (order.status === OrderStatus.Canceled) {
       throw new BadRequestException('Order has been canceled');
     }
+
+    await stripe.charges.create({
+      amount: order.price * 100,
+      currency: 'usd',
+      source: token,
+      description: `Order #${order.id}`,
+    });
 
     res.status(201).send(order);
   }
