@@ -1,10 +1,31 @@
-import buildClient from '../utils/buildClient';
+import Link from 'next/link';
 
-const Home = ({ currentUser }) => {
-  console.log('Current User', currentUser);
+const Home = ({ currentUser, tickets }) => {
   return currentUser ? (
     <div>
-      <h1>You are signed in!</h1>
+      <h1>Tickets</h1>
+      <table className="table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Price</th>
+            <th>Link</th>
+          </tr>
+        </thead>
+        <tbody>
+          {tickets.map((ticket) => (
+            <tr key={ticket.id}>
+              <td>{ticket.title}</td>
+              <td>{ticket.price}</td>
+              <td>
+                <Link href={`/tickets/${ticket.id}`}>
+                  <a className="btn">View</a>
+                </Link>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   ) : (
     <div>
@@ -13,11 +34,9 @@ const Home = ({ currentUser }) => {
   );
 };
 
-Home.getInitialProps = async (context) => {
-  const client = buildClient(context);
-  const { data } = await client.get('/api/users/current-user');
-
-  return data;
+Home.getInitialProps = async (context, client, currentUser) => {
+  const { data } = await client.get('/api/tickets');
+  return { tickets: data };
 };
 
 export default Home;
