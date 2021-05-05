@@ -26,6 +26,7 @@ router.put(
 
     new OrderCanceledPublisher(natsWrapper.client).publish({
       id: order.id,
+      __v: order.__v,
       ticket: { id: order.ticket.id },
     });
     res.send(order);
